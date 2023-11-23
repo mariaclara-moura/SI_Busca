@@ -47,43 +47,63 @@ dados_reais = {
     14: [(13, calcular_tempo(5.1), 'verde')]
 }
 
+# Função que retorna os vizinhos de um estado  
 def vizinhos(estado):
     if estado in dados_reais:
         return dados_reais[estado]
-    
+
+# Função que implementa o algoritmo A*
 def AStar(inicio, fim):
-    caminho = []                        
+    caminho = []               
+    # adiciona o estado inicial na fronteira         
     caminho.append(inicio)          
     caminho_final = []
+    # dicionário que armazena o custo de cada estado
     g = {}                             
+    # dicionário que armazena o pai de cada estado
     pai = {}                           
+    # custo do estado inicial é zero
     g[inicio] = 0                  
+    # pai do estado inicial é ele mesmo
     pai[inicio] = inicio
+    # enquanto a fronteira não estiver vazia
     while len(caminho) != 0: 
         aux = 0
         for estado in caminho:
+            # se o estado auxiliar for igual a zero, ele recebe o estado atual
             if aux == 0:
                 aux = estado 
+            # se o custo do estado atual for menor que o custo do estado auxiliar, o estado auxiliar recebe o estado atual
             if g[estado] + tempos[estado[0] - 1][fim[0] - 1] < g[aux] + tempos[aux[0] - 1][fim[0] - 1]:
                 aux = estado 
+        # se o estado auxiliar for diferente do estado final
         if aux != fim: 
+            # para cada vizinho do estado auxiliar
             for (number, distance, line) in vizinhos(aux[0]): 
                 est = (number, line) 
+                # se o vizinho não estiver na fronteira e não estiver no caminho final
                 if est not in caminho and est not in caminho_final:
+                    # adiciona o vizinho na fronteira
                     caminho.append(est)                
                     print(f'Fronteira: {caminho}')
+                    # o pai do vizinho recebe o estado auxiliar
                     pai[est] = aux                  
+                    # o custo do vizinho recebe o custo do estado auxiliar mais a distância entre o vizinho e o estado auxiliar
                     g[est] = g[aux] + distance 
+                # se o vizinho estiver na fronteira, mas em uma linha diferente, fazemos a baldeação
                     if aux[1] != est[1]: 
                         g[est] = g[est] + 4
                 else:
+                    # se o custo do vizinho for maior que o custo do estado auxiliar mais a distância entre o vizinho e o estado auxiliar
                     if g[est] > g[aux] + distance:
+                        # o custo do vizinho recebe o custo do estado auxiliar mais a distância entre o vizinho e o estado auxiliar
                         g[est] = g[aux] + distance
+                        # o pai do vizinho recebe o estado auxiliar
                         pai[est] = aux 
                         if number in caminho_final:
                             caminho_final.remove(est)
                             caminho.append(est)
-                 
+        # se o estado auxiliar for igual ao estado final ou se o número do estado auxiliar for igual ao número do estado final        
         if (aux == fim) or (aux[0] == fim[0]):
             caminho = []
             while pai[aux] != aux:
